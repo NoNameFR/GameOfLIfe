@@ -12,7 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Timers;
 using GameOfLife;
+
 
 namespace Pixel_draw
 {
@@ -29,7 +31,7 @@ namespace Pixel_draw
         static MainWindow w;
 
         static int ratio;
-        GameOfLife.GameOfLife _game;
+        static GameOfLife.GameOfLife _game;
 
         public MainWindow()
         {
@@ -61,7 +63,8 @@ namespace Pixel_draw
             i.VerticalAlignment = VerticalAlignment.Top;
 
             Display(_game);
-            this.KeyUp += MainWindow_KeyUp;
+            SetTimer(this);
+            //this.KeyUp += MainWindow_KeyUp;
             //i.MouseMove += new MouseEventHandler(i_MouseMove);
             //i.MouseLeftButtonDown +=
             //    new MouseButtonEventHandler(i_MouseLeftButtonDown);
@@ -72,14 +75,39 @@ namespace Pixel_draw
 
 
         }
+        private static System.Timers.Timer aTimer;
 
-        private void MainWindow_KeyUp(object sender, KeyEventArgs e)
+        private static void SetTimer(MainWindow mainWindow)
+        {
+
+            // Create a timer with a two second interval.
+            aTimer = new System.Timers.Timer(100);
+            // Hook up the Elapsed event for the timer. 
+            aTimer.Elapsed += (Object source, ElapsedEventArgs e) =>
+            {
+                mainWindow.Dispatcher.Invoke(() =>
+                {
+                    OnTimedEvent(source, e);
+
+                });
+            };
+            aTimer.AutoReset = true;
+            aTimer.Enabled = true;
+        }
+
+
+        private static void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
             _game.ComputeNextTurn();
             Display(_game);
         }
+        //private void MainWindow_KeyUp(object sender, KeyEventArgs e)
+        //{
+        //    _game.ComputeNextTurn();
+        //    Display(_game);
+        //}
 
-        private void Display(GameOfLife.GameOfLife game)
+        private static void Display(GameOfLife.GameOfLife game)
         {
             for (int i = 0; i < game.Size; i++)
             {
@@ -100,7 +128,7 @@ namespace Pixel_draw
                             pBackBuffer += j * writeableBitmap.BackBufferStride;
                             pBackBuffer += i * 4;
 
-                     
+
 
                             if (game.board[i, j])
                             {
@@ -113,7 +141,7 @@ namespace Pixel_draw
                             }
                             else
                             {
-                
+
                                 // Assign the color data to the pixel.
                                 *((int*)pBackBuffer) = 0;
                             }

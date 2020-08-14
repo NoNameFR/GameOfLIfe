@@ -13,6 +13,11 @@ namespace GameOfLife
         {
             CreateClignotant(0, 1);
             CreateClignotant(4, 4);
+            CreatePlaneur(10, 10);
+            CreatePlaneur(16, 10);
+            CreatePlaneur(22, 10);
+            CreatePlaneur(28, 10);
+            CreatePlaneur(34, 10);
             CreateRandomCells(1, 1);
         }
         public void CreateRandomCells(int x, int y)
@@ -136,6 +141,14 @@ namespace GameOfLife
                 return false;
             }
             return true;
+        }
+        public void CreatePlaneur(int x, int y)
+        {
+            board[x, y] = true;
+            board[x, y + 2] = true;
+            board[x + 1, y + 1] = true;
+            board[x + 1, y + 2] = true;
+            board[x + 2, y + 1] = true;
         }
         public void CreateClignotant(int x, int y)
         {
